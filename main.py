@@ -1,5 +1,8 @@
-
+# ----------------------------------------------------
 # Created by Möhrchen [Thilo] and OrangeChef [Kameron]
+#     and the help of Acute with the Http-Requests    
+#           ©2022 - All Rights Reserved
+# ----------------------------------------------------
 
 import srcomapi, srcomapi.datatypes as dt
 import discord
@@ -7,6 +10,7 @@ from discord.ext import tasks, commands
 from discord.utils import get
 from webserver import keep_alive
 import os
+import random
 
 #=========Functions=========
 
@@ -33,6 +37,39 @@ def ConvertStringToTime(strPar):
         return (returnString1 + returnString2 + "0")
 
 api = srcomapi.SpeedrunCom(); api.debug = 1
+
+#CreateCustomID
+def CreateTicketID(totalTickets):
+
+    letterArray = ['a', 'A', 'b', 'B', 'c', 'C', 'd', 'D', 'e', 'E', 'f', 'F', 'g', 'G', 'h', 'H', 'i', 'I', 'j', 'J', 'k', 'K', 'l', 'L', 'm', 'M', 'n', 'N', 'o', 'O',
+    'p', 'P', 'q', 'Q', 'r', 'R', 's', 'S', 't', 'T', 'u', 'U', 'v', 'V', 'w', 'W', 'x', 'X', 'y', 'Y', 'z', 'Z', '1', '2', '3', '4', '5', '6', '7', '8', '8', '9', '0']
+    letterArray2 = ['!', '@', '#', '$', '%', '^', '&', '*', '(', ')']
+    numberArray = str(totalTickets)
+
+    randomFactor = random.randint(0, 62)
+    idReturn = letterArray[randomFactor]
+
+    for n in numberArray:
+        idReturn = idReturn + letterArray2[int(n)]
+
+    randomFactor = random.randint(0, 62)
+    idReturn = idReturn + letterArray[randomFactor]
+
+
+    return idReturn
+
+#ReverseCustomID
+def ReverseTicketID(strID):
+    forCount = 0
+    letterArray2 = ['!', '@', '#', '$', '%', '^', '&', '*', '(', ')']
+    returnStr = ''
+    for char in strID:
+        if forCount != 0 and forCount != len(strID) - 1:
+            returnStr = returnStr + str(letterArray2.index(char))
+        forCount += 1
+    
+    return int(returnStr)
+    
 
 def TestForAdvancedSpeedrunCommand(messagePar, checkPar):
     #if checkPar in messagePar: return True
@@ -82,7 +119,7 @@ class MyClient(discord.Client):
     async def on_ready(self):
         print('Logged on as {0}!'.format(self.user))
         self.Change_Values.start()
-
+        #print(ReverseTicketID('7$j'))
     #This is a loop which update every 300 seconds the values from the array
     @tasks.loop(seconds=300.0)
     async def Change_Values(self):      
@@ -143,12 +180,12 @@ class MyClient(discord.Client):
                 if message.author.bot: return
                 watchListChannel = client.get_channel(watchListChannelId)
                 await message.delete()
-                await message.author.send("You used the banned word '" + bw + "'! That's why you got banned!'")
-                await message.channel.send("This message had to be deleted because a word was used in this message which should not be used! This is also the reason why this user is permantantly banned!")
-                await watchListChannel.send("The banned word '" + bw + "' was used by " + str(message.author) + " in the channel #" + str(message.channel.name) + ".\n   Message: " + messageStr)
+                await message.author.send("You have been banned from Will You Speedrun? for using a banned word.")
+                await message.channel.send("The previous message was deleted because a banned word was used!")
+                await watchListChannel.send("The banned word '" + bw + "' was used by " + str(message.author) + " in the channel #" + str(message.channel.name) + ".\nMessage: " + messageStr)
                 try: await message.guild.get_member(message.author.id).ban() 
                 except: await message.author.ban() 
-                await watchListChannel.send("Succesfully banned " + str(message.author) + "!")
+                await watchListChannel.send("Succesfully banned " + str(message.author) + ".")
                 return
             
         for ww in warningWords:    
@@ -156,10 +193,10 @@ class MyClient(discord.Client):
                 if message.author.bot: return
                 watchListChannel = client.get_channel(watchListChannelId)
                 await message.delete()
-                await message.author.send("You used the banned word '" + ww + "'! Please don't use it again!'")
-                await message.channel.send("This message had to be deleted because a word was used in this message which should not be used!")
-                await watchListChannel.send("The banned word '" + ww + "' was used by " + str(message.author) + " in the channel #" + str(message.channel.name) + ".\n   Message: " + messageStr)
-                await watchListChannel.send("Succesfully warned " + str(message.author) + "!")
+                await message.author.send("You used the banned word '" + ww + "'. Please don't use it again!'")
+                await message.channel.send("The previous message was deleted because a banned word was used!")
+                await watchListChannel.send("The banned word '" + ww + "' was used by " + str(message.author) + " in the channel #" + str(message.channel.name) + ".\nMessage: " + messageStr)
+                await watchListChannel.send("Succesfully warned " + str(message.author) + ".")
                 return
 
         #===Clear Command (m!clear X)===
@@ -301,9 +338,11 @@ class MyClient(discord.Client):
             )
             #embed.add_field(name='m!src X', value='Shows top X runs.', inline=True)
             #embed.add_field(name='m!src X-Y', value='Shows runs X through Y.\n', inline=True)
-            embed.add_field(name='m!eventruns', value='Shows a list of all runs submitted during the event. \n', inline=False)
-            embed.add_field(name='m!lb category difficulty X', value='Shows top X runs from \n the category in the difficulty.', inline=True)
+            embed.add_field(name='m!eventruns', value='Shows a list of all runs submitted during the event. \n', inline=True)
+            embed.add_field(name='m!lb category difficulty X', value='Shows top X runs from \n the category in the difficulty.', inline=False)
             embed.add_field(name='m!lb category difficulty X-Y', value='Shows runs X through Y from \n the category in the difficulty.', inline=True)
+            embed.add_field(name='m!ticket', value='Creates a ticket.', inline=False)
+            embed.add_field(name='m!removeticket ID', value='Removes a ticket.', inline=True)
             embed.set_thumbnail(url='https://www.speedrun.com/themeasset/2woqj208/logo?v=ae9623c')
             await message.channel.send(embed=embed)
 
@@ -510,8 +549,9 @@ class MyClient(discord.Client):
 
         if TestForAdvancedSpeedrunCommand(messageStr, prefix + 'ticket'):
             if str(message.author) not in listOfSpeedyTicketWriter:
-                listOfSpeedyTicketWriter.append(str(message.author))
                 currentTickets = ""
+                currentIdCount = 0
+                shouldChangeIdCount = True
                 try:
                     txtr = open("Tickets.txt","r")
                     rl = txtr.readlines()
@@ -521,16 +561,104 @@ class MyClient(discord.Client):
                 except:
                     print("Currently there isn't a txt-file, so I create a file for you :)")
                 txtw = open("Tickets.txt","w")
+                txtr2 = open("TicketsHistory.txt","r")
+                txt2rl = txtr2.readlines()
+                currentIdCount = round(len(txt2rl) / 2)
+                ticketHistory = ''
+                for line in txt2rl:
+                    ticketHistory = ticketHistory + line
+                txtr2.close()
+
+                txtw2 = open("TicketsHistory.txt","w")
                 txtw.write(currentTickets)
-                txtw.write(str(message.author) + ": " + messageStr.replace(prefix + 'ticket', '') + "\n")
+                txtw2.write(ticketHistory)
+                
+                
+
+                try:
+                    txtw.write(str(message.author) + ": " + messageStr.replace(prefix + 'ticket', '') + "\n")
+                    txtw2.write(str(message.author) + ": " + messageStr.replace(prefix + 'ticket', '') + "\n")
+                except:
+                    await message.channel.send("Your message contains characters that could not be processed!")
+                    return
                 txtw.write("------------------------------------------------------------------------------------\n")
+                txtw2.write("------------------------------------------------------------------------------------\n")
+
                 txtw.close()
+                txtw2.close()
 
-                await message.channel.send("Thank you for creating a ticket! :)")
+                listOfSpeedyTicketWriter.append(str(message.author))
+
+                theCurrentId = CreateTicketID(currentIdCount)
+
+                await message.channel.send(str(message.author.mention) + " Thank you for creating a ticket! :)  (ID: " + theCurrentId + ")")
             else:
-                await message.channel.send("Please slow down with writing tickets! Try in a few minutes again!")
+                await message.channel.send("Please slow down with writing tickets! Try again in a few minutes!")
+
+            return
+
+        if TestForAdvancedSpeedrunCommand(messageStr, prefix + 'removeticket'):
+            theRemoveId = messageStr.replace(prefix + 'removeticket ', '')
+            rti = 0
+            try:
+                rti = ReverseTicketID(theRemoveId)
+            except:
+                await message.channel.send("This ID doesn't exist!")
+                return
+            ticketHistoryStr = ''
+            notChangedTxt = ''
+            nameFromTicketWriter = ''
+            searchedLine = ''
+            try:
+                txtr = open("TicketsHistory.txt","r")
+                rl = txtr.readlines()
+                a = 0
+                changeV = True
+                for line in rl:
+                    ticketHistoryStr = ticketHistoryStr + line
+                    if changeV: 
+                        changeV = False
+                        if a == rti:
+                            nameFromTicketWriter = line.split(':')[0]
+                            searchedLine = line
+                        a += 1
+                    else: changeV = True
+                txtr.close()
+            except:
+                await message.channel.send("This ID doesn't exist!")
+                return
+
+            if str(message.author) != nameFromTicketWriter and str(message.author) not in nicePeopleArray:
+                await message.channel.send("You haven't the permission to remove tickets from the others!")
+                return
+
+            txtr = open("Tickets.txt","r")
+            txtrrl = txtr.readlines()
+            txtr.close()
+
+            txtw = open("Tickets.txt","w")
+            currentTickets = ''
+            deleteNextLine = False
+            for line in txtrrl:
+                notChangedTxt = notChangedTxt + line
+                if deleteNextLine:
+                    deleteNextLine = False
+                elif line != searchedLine:
+                    currentTickets = currentTickets + line
+                else: deleteNextLine = True
+
+            txtw.write(currentTickets)
+            txtw.close()
+                
+            if notChangedTxt == currentTickets:
+                await message.channel.send("This ID doesn't exist!")
+            else:
+                await message.channel.send("Your ticket has been successfully removed!")
+
+            return
 
 
+            
 
     #===Reaction Add===
 
@@ -561,8 +689,8 @@ class MyClient(discord.Client):
         user = await(guild.fetch_member(payload.user_id)) # Here is the fetch-Function
         eventAnnouncements = discord.utils.get(guild.roles, name='Event Announcements') 
         if user.bot: return
-        await user.remove_roles(eventAnnouncements)    
-        
+        await user.remove_roles(eventAnnouncements)      
+      
 #Start the Discord Bot -->
 
 client = MyClient()
