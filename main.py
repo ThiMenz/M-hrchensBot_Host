@@ -43,7 +43,7 @@ def CreateTicketID(totalTickets):
 
     letterArray = ['a', 'A', 'b', 'B', 'c', 'C', 'd', 'D', 'e', 'E', 'f', 'F', 'g', 'G', 'h', 'H', 'i', 'I', 'j', 'J', 'k', 'K', 'l', 'L', 'm', 'M', 'n', 'N', 'o', 'O',
     'p', 'P', 'q', 'Q', 'r', 'R', 's', 'S', 't', 'T', 'u', 'U', 'v', 'V', 'w', 'W', 'x', 'X', 'y', 'Y', 'z', 'Z', '1', '2', '3', '4', '5', '6', '7', '8', '8', '9', '0']
-    letterArray2 = ['!', '@', '#', '$', '%', '^', '&', '*', '(', ')']
+    letterArray2 = ['!', '@', '#', '$', '%', '?', '&', '*', '(', ')']
     numberArray = str(totalTickets)
 
     randomFactor = random.randint(0, 62)
@@ -119,7 +119,6 @@ class MyClient(discord.Client):
     async def on_ready(self):
         print('Logged on as {0}!'.format(self.user))
         self.Change_Values.start()
-        #print(ReverseTicketID('7$j'))
     #This is a loop which update every 300 seconds the values from the array
     @tasks.loop(seconds=300.0)
     async def Change_Values(self):      
@@ -542,6 +541,39 @@ class MyClient(discord.Client):
                 a += 1
            
 
+    #===Mod Command (m!setstatus)===
+        if TestForAdvancedSpeedrunCommand(messageStr, prefix + 'setstatus'):
+            if str(message.author) in nicePeopleArray:
+                try:
+                    arguments = messageStr.replace(prefix + 'setstatus ', '').split()
+                    newStatus = ''
+                    whichId = arguments[0]
+                    for argu in arguments:
+                        if argu != whichId: 
+                            newStatus = newStatus + argu + " "
+
+                    txtFile = open("TicketStatus.txt","r")
+                    txtFileRl = txtFile.readlines()
+                    txtFile.close()
+
+                    rvrsedId = ReverseTicketID(whichId)
+
+                    newTxtString = ''
+                    for line in txtFileRl:
+                        if whichId == line.split(':')[0]:
+                            newTxtString = newTxtString + str(whichId) + ": ~" + str(newStatus) + "\n"
+                        else:
+                            newTxtString = newTxtString + line
+                       
+
+                    txtWriteFile = open("TicketStatus.txt","w")
+                    txtWriteFile.write(newTxtString)
+                    txtWriteFile.close()
+
+                    await message.channel.send("The Status of ticket '" + str(whichId) + "' has been changed to '" + str(newStatus) + "'.") #should i start it now? sure
+                except:
+                    await message.channel.send("Something went wrong! :(")
+
 
     #===Ticket Create===
 
@@ -569,27 +601,37 @@ class MyClient(discord.Client):
                     ticketHistory = ticketHistory + line
                 txtr2.close()
 
+                txtr3 = open("TicketStatus.txt","r")
+                txt3rl = txtr3.readlines()
+                ticketStatusHistory = ''
+                for line in txt3rl:
+                    ticketStatusHistory = ticketStatusHistory + line
+                txtr3.close()
+
                 txtw2 = open("TicketsHistory.txt","w")
+                txtw3 = open("TicketStatus.txt","w")
                 txtw.write(currentTickets)
                 txtw2.write(ticketHistory)
+                txtw3.write(ticketStatusHistory)
                 
-                
+                theCurrentId = CreateTicketID(currentIdCount)
 
                 try:
                     txtw.write(str(message.author) + ": " + messageStr.replace(prefix + 'ticket', '') + "\n")
                     txtw2.write(str(message.author) + ": " + messageStr.replace(prefix + 'ticket', '') + "\n")
+                    txtw3.write(str(theCurrentId) + ": ~Unseen \n") #Statuses are Unseen, Seen, In Progress and Implemented
                 except:
                     await message.channel.send("Your message contains characters that could not be processed!")
                     return
                 txtw.write("------------------------------------------------------------------------------------\n")
                 txtw2.write("------------------------------------------------------------------------------------\n")
+                txtw3.write("------------------------------------------------------------------------------------\n")
 
                 txtw.close()
                 txtw2.close()
+                txtw3.close()
 
                 listOfSpeedyTicketWriter.append(str(message.author))
-
-                theCurrentId = CreateTicketID(currentIdCount)
 
                 await message.channel.send(str(message.author.mention) + " Thank you for creating a ticket! :)  (ID: " + theCurrentId + ")")
             else:
@@ -653,12 +695,54 @@ class MyClient(discord.Client):
             if notChangedTxt == currentTickets:
                 await message.channel.send("This ID doesn't exist!")
             else:
+                txtStatusR = open("TicketStatus.txt", "r")
+                txtStatusRl = txtStatusR.readlines()
+                txtStatusR.close()
+                txtStatusW = open("TicketStatus.txt", "w")
+                theTicketHistory = ''
+                for st in txtStatusRl:
+                    if st.split(':')[0] == theRemoveId: theTicketHistory = theTicketHistory + st.split(':')[0] + ": ~Removed \n"
+                    else: theTicketHistory = theTicketHistory + st
+                txtStatusW.write(theTicketHistory)
+                txtStatusW.close()
                 await message.channel.send("Your ticket has been successfully removed!")
 
             return
 
 
-            
+    #===Get Ticket Command===
+        if TestForAdvancedSpeedrunCommand(messageStr, prefix + 'getticket'):
+            try:
+                strId = messageStr.replace(prefix + 'getticket ', '')
+                intId = ReverseTicketID(strId)
+
+                txtFile = open("TicketsHistory.txt","r")
+                txtFileRl = txtFile.readlines()
+                txtFile.close()
+
+                activeTicket = txtFileRl[(intId) * 2] 
+
+                txtFileStatus = open("TicketStatus.txt", "r")
+                txtFileStatusRl = txtFileStatus.readlines()
+                txtFileStatus.close()
+
+                activeTicketStatus = txtFileStatusRl[(intId) * 2].split('~')[1]
+
+                if 'Removed' not in activeTicketStatus or str(message.author) in nicePeopleArray:
+                    embed = discord.Embed(
+                        title = 'Get Ticket',
+                        description = '',
+                        colour = discord.Colour.blue()
+                    )
+                    embed.add_field(name='ID: ', value=strId, inline=True)
+                    embed.add_field(name='Status: ', value=activeTicketStatus, inline=True)
+                    embed.add_field(name='Message: ', value=activeTicket, inline=False)
+                    embed.set_thumbnail(url='https://www.speedrun.com/themeasset/2woqj208/logo?v=ae9623c')
+                    await message.channel.send(embed=embed)
+                else:
+                    await message.channel.send("This ticket doesn't exist!")
+            except:
+                await message.channel.send("This ticket doesn't exist!")
 
     #===Reaction Add===
 
@@ -689,7 +773,8 @@ class MyClient(discord.Client):
         user = await(guild.fetch_member(payload.user_id)) # Here is the fetch-Function
         eventAnnouncements = discord.utils.get(guild.roles, name='Event Announcements') 
         if user.bot: return
-        await user.remove_roles(eventAnnouncements)      
+        await user.remove_roles(eventAnnouncements)    
+
       
 #Start the Discord Bot -->
 
