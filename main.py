@@ -684,7 +684,8 @@ class MyClient(discord.Client):
                 allIds = ''
                 for ln in txtMessageIDsRl:
                     allIds = allIds + ln
-                allIds = allIds + str(theTicketChannel.last_message_id) + "\n"
+                allIds = allIds + str(theTicketChannel.last_message_id)
+                allIds = allIds + " \n"
                 txtMessageIdsW = open("TicketMessageIds.txt","w")
                 txtMessageIdsW.write(allIds)
                 txtMessageIdsW.close()
