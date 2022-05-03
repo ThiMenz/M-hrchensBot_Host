@@ -19,22 +19,24 @@ def ConvertStringToTime(strPar):
     parFloat = float(strPar)
     rest = round(parFloat % 60, 2)
     minutes = int(round((parFloat - rest) / 60, 0))
+    hours = 0
+    returnString0 = ""
     returnString1 = ""
     returnString2 = ""
-    if minutes < 10:
-        returnString1 = "0" + str(minutes)
-    else:
-        returnString1 = "" + str(minutes)
+    if minutes > 59:
+        while minutes > 59:
+            minutes -= 60
+            hours += 1
+        returnString0 = str(hours) + ":"
+
+    if minutes < 10: returnString1 = "0" + str(minutes)
+    else: returnString1 = "" + str(minutes)
     
-    if rest < 10:
-        returnString2 = ":0" + str(rest)
-    else:
-        returnString2 = ":" + str(rest)
+    if rest < 10: returnString2 = ":0" + str(rest)
+    else: returnString2 = ":" + str(rest)
         
-    if rest * 100 % 10 == 0:
-        return (returnString1 + returnString2 + "00")
-    else:
-        return (returnString1 + returnString2 + "0")
+    if rest * 100 % 10 == 0: return (returnString0 + returnString1 + returnString2 + "00")
+    else: return (returnString0 + returnString1 + returnString2 + "0")
 
 api = srcomapi.SpeedrunCom(); api.debug = 1
 
@@ -96,13 +98,14 @@ dcData[1] = 'bot-commands'
 prefix = "m!"
 client = commands.Bot(command_prefix = 'm!')
 
-watchListChannelId = 963122498273157150  
-ticketChannelId = 966279655344701449  
+watchListChannelId = 964456821182070784 
+ticketChannelId = 966237739223760906 
 
 bannedWords = ["nigga", "nigger"]
 warningWords = ["retard", "retarded", "penis", "vagina"]
 
-nicePeopleArray = ["FlippyDolphin#1651", "Meister Möhre#1623", "dash#8750", "JonasTyroller#7200", "OrangeChef#4553", "TheOrangeWhale#8667", "Zetas2#6270"]
+nicePeopleArray = ["FlippyDolphin#1651", "Meister Möhre#1623", "dash#8750", "JonasTyroller#7200", "OrangeChef#4553", "TheOrangeWhale#8667", "Zetas2#6270", "Ezra3#0928"]
+godDamnNicePeopleArray = ["FlippyDolphin#1651", "Meister Möhre#1623", "dash#8750", "JonasTyroller#7200", "OrangeChef#4553"]
 
 
 categoryChoices = ["Any% NMG", "Any%", "Alt Ending", "All Collectibles", "No Shortcuts"]
@@ -128,7 +131,7 @@ class MyClient(discord.Client):
         self.Change_Values.start()
         self.Change_Status.start()
     #This is a loop which update every 300 seconds the values from the array
-    @tasks.loop(seconds=10.0)
+    @tasks.loop(seconds=30.0)
     async def Change_Status(self):
         global activeBotStatus
         await self.change_presence(activity=discord.Game(name=listOfBotStatus[activeBotStatus]))
@@ -139,7 +142,7 @@ class MyClient(discord.Client):
     @tasks.loop(seconds=300.0)
     async def Change_Values(self):      
         listOfSpeedyTicketWriter.clear()
-        print('LOSTW cleared!')
+        print('300s over!')
         return
         #Getting the Leaderboard -->
         searchApi = api.search(srcomapi.datatypes.Game, {"name": "Will You Snail?"})
@@ -225,7 +228,7 @@ class MyClient(discord.Client):
 
 
         if str(prefix + 'clear') in messageStr.lower():
-            if str(message.author) not in nicePeopleArray: return 
+            if str(message.author) not in godDamnNicePeopleArray: return 
             try:
                 async for m in message.channel.history(limit=1 + int(messageStr.replace(str(prefix + 'clear '), ''))):
                     await m.delete()
@@ -350,6 +353,13 @@ class MyClient(discord.Client):
             
 
 
+        #===Zetas Command (m!Zetas)===
+
+        #if str(prefix + 'zetas') in messageStr.lower(): 
+        #    theGuild = message.guild 
+        #   theRole = discord.utils.get(theGuild.roles,name=messageStr.replace(prefix + 'zetas', ''))
+        #    message.channel.send("That should be the mention... " + theRole.mention)
+        #    return
 
         #===Help Command (m!Help)==
 
@@ -657,7 +667,7 @@ class MyClient(discord.Client):
                     return
                 txtw.write("------------------------------------------------------------------------------------\n")
                 txtw2.write("------------------------------------------------------------------------------------\n")
-                txtw3.write("------------------------------------------------------------------------------------\n")
+                #txtw3.write("------------------------------------------------------------------------------------\n")
                 txtw.close()
                 txtw2.close()
                 txtw3.close()
@@ -684,8 +694,7 @@ class MyClient(discord.Client):
                 allIds = ''
                 for ln in txtMessageIDsRl:
                     allIds = allIds + ln
-                allIds = allIds + str(theTicketChannel.last_message_id)
-                allIds = allIds + " \n"
+                allIds = allIds + str(theTicketChannel.last_message_id) + "\n"
                 txtMessageIdsW = open("TicketMessageIds.txt","w")
                 txtMessageIdsW.write(allIds)
                 txtMessageIdsW.close()
@@ -704,7 +713,6 @@ class MyClient(discord.Client):
             try:
                 rti = ReverseTicketID(theRemoveId)
             except:
-                print('1')
                 await message.channel.send("This ID doesn't exist!")
                 return
             ticketHistoryStr = ''
@@ -728,7 +736,6 @@ class MyClient(discord.Client):
                 txtr.close()
             except:
                 await message.channel.send("This ID doesn't exist!")
-                print('2')
                 return
 
             if str(message.author) != nameFromTicketWriter and str(message.author) not in nicePeopleArray:
@@ -755,7 +762,6 @@ class MyClient(discord.Client):
                 
             if notChangedTxt == currentTickets:
                 await message.channel.send("This ID doesn't exist!")
-                print('3')
             else:
                 txtStatusR = open("TicketStatus.txt", "r")
                 txtStatusRl = txtStatusR.readlines()
@@ -800,7 +806,7 @@ class MyClient(discord.Client):
                 txtFileStatusRl = txtFileStatus.readlines()
                 txtFileStatus.close()
 
-                activeTicketStatus = txtFileStatusRl[(intId) * 2].split('~')[1]
+                activeTicketStatus = txtFileStatusRl[(intId)].split('~')[1]
 
                 if 'Removed' not in activeTicketStatus or str(message.author) in nicePeopleArray:
                     embed = discord.Embed(
@@ -815,8 +821,8 @@ class MyClient(discord.Client):
                     await message.channel.send(embed=embed)
                 else:
                     await message.channel.send("This ticket doesn't exist!")
-            except:
-                await message.channel.send("This ticket doesn't exist!")
+            except Exception as e:
+                await message.channel.send("This ticket doesn't exist!" + str(e))
 
 
 
@@ -825,6 +831,26 @@ class MyClient(discord.Client):
 
           
     async def on_raw_reaction_add(self, payload): #We need to use the "raw"-Method, otherwise it only checks the messages in the bot-cache
+        ctids = open("TicketMessageIds.txt", "r")
+        ctidsRl = ctids.readlines()
+        ctids.close()
+        for ln in ctidsRl:
+            if payload.message_id == int(ln):
+                channel = client.get_channel(payload.channel_id)
+                message = await channel.fetch_message(payload.message_id)  
+                if message.reactions[0].count > message.reactions[1].count:
+                    ts = open("TicketStatus.txt", "r")
+                    tsRl = ts.readlines()
+                    ts.close()
+                    newTxtString = ''
+                    for line in tsRl:
+                        if '~' in line:
+                            if ctidsRl.index(ln) == tsRl.index(line) and "seen" in line.split('~')[1].lower(): newTxtString = newTxtString + line.split('~')[0] + "~Under consideration \n"
+                            else: newTxtString = newTxtString + line
+                    tsw = open("TicketStatus.txt", "w")
+                    tsw.write(newTxtString)
+                    tsw.close()
+                    return
         channel = client.get_channel(payload.channel_id)
         message = await channel.fetch_message(payload.message_id)
         if str(prefix + 'reaction') not in str(message.content) or str(message.author) not in nicePeopleArray: return 
@@ -849,7 +875,7 @@ class MyClient(discord.Client):
         user = await(guild.fetch_member(payload.user_id)) # Here is the fetch-Function
         eventAnnouncements = discord.utils.get(guild.roles, name='Event Announcements') 
         if user.bot: return
-        await user.remove_roles(eventAnnouncements)    
+        await user.remove_roles(eventAnnouncements)   
 
       
 #Start the Discord Bot -->

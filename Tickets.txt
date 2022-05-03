@@ -1,2 +1,14 @@
 Martinuz_64#7736:  don’t accept any feedback, cause this server is already perfect!
 ------------------------------------------------------------------------------------
+OrangeChef#4553:  The bot changing status every 10 seconds is a bit fast, maybe every 10 minutes instead
+------------------------------------------------------------------------------------
+Ezra3#0928:  Move "DEMOS" to be at the bottom below "VOICE CHAT AND OTHER" and stuff like that because it's completely innactive and clutters the side bar
+------------------------------------------------------------------------------------
+Meister Möhre#1623:  Add Ezra to the nicePeopleArray
+------------------------------------------------------------------------------------
+Meister Möhre#1623:  I changed the loop duration from the status from the bot to 30s, is that good? or not good?
+------------------------------------------------------------------------------------
+FlippyDolphin#1651:  remove ezra from nice person list <:tf:922223957174804610>
+------------------------------------------------------------------------------------
+Acute#3148:  I think the minimum kills category could be turned into a low% type category. Instead of inputting your final time you would input the amount of enemies killed in the hours box (the other boxes would be 0). This is similarly done for the damageless moons category in Super Mario Odyssey Category Extensions (screenshot attached) except here the higher the time (no. of moons  collected) the higher the place on the leaderboard. For this category the lower the kills, the lower the 'time' would be (e.g 5 kills = 5 hours) so it would be ordered normally.
+------------------------------------------------------------------------------------
