@@ -32,3 +32,11 @@ Acute#3148:  I think the minimum kills category could be turned into a low% type
 ------------------------------------------------------------------------------------
 Meister Möhre#1623:  FIX THIS TICKET SYSTEM
 ------------------------------------------------------------------------------------
+Martinuz_64#7736:  Have “AL Quit Out” & “AL Main/Side Exit” on all IL leaderboards when applicable. Currently the system works as follows: if one way to exit the level is used in any kind of full-game category, there’s an IL category for it. Thaaaaat… is too arbitrary to be honest. I’d say that it makes more sense to have a “Quit Out” for ALL levels with collectibles, and “Main Exit” and/or “Side Exit” where it’s possible at all.
+------------------------------------------------------------------------------------
+Meister Möhre#1623:  Have “AL Quit Out” & “AL Main/Side Exit” on all IL leaderboards when applicable. Currently the system works as follows: if one way to exit the level is used in any kind of full-game category, there’s an IL category for it. Thaaaaat… is too arbitrary to be honest. I’d say that it makes more sense to have a “Quit Out” for ALL levels with collectibles, and “Main Exit” and/or “Side Exit” where it’s possible at all.
+------------------------------------------------------------------------------------
+Martinuz_64#7736:  Have “AL Quit Out” & “AL Main/Side Exit” on all IL leaderboards when applicable. Currently the system works as follows: if one way to exit the level is used in any kind of full-game category, there’s an IL category for it. Thaaaaat… is too arbitrary to be honest. I’d say that it makes more sense to have a “Quit Out” for ALL levels with collectibles, and “Main Exit” and/or “Side Exit” where it’s possible at all.
+------------------------------------------------------------------------------------
+Meister Möhre#1623:  I added <@324128483972349952> and <@847006943910559744> to the NicePeopleArray and removed Dash from it
+------------------------------------------------------------------------------------

@@ -98,14 +98,14 @@ dcData[1] = 'bot-commands'
 prefix = "m!"
 client = commands.Bot(command_prefix = 'm!')
 
-watchListChannelId = 964456821182070784 
-ticketChannelId = 966237739223760906 
+watchListChannelId = 963122498273157150  
+ticketChannelId = 966279655344701449  
 
 bannedWords = ["nigga", "nigger"]
 warningWords = ["retard", "retarded", "penis", "vagina"]
 
-nicePeopleArray = ["FlippyDolphin#1651", "Meister Möhre#1623", "dash#8750", "JonasTyroller#7200", "OrangeChef#4553", "TheOrangeWhale#8667", "Zetas2#6270", "Ezra3#0928"]
-godDamnNicePeopleArray = ["FlippyDolphin#1651", "Meister Möhre#1623", "dash#8750", "JonasTyroller#7200", "OrangeChef#4553"]
+nicePeopleArray = ["FlippyDolphin#1651", "Meister Möhre#1623", "JonasTyroller#7200", "OrangeChef#4553", "TheOrangeWhale#8667", "Zetas2#6270", "Ezra3#0928", "Doginator#5868", "enmy#0745"]
+godDamnNicePeopleArray = ["FlippyDolphin#1651", "Meister Möhre#1623", "JonasTyroller#7200", "OrangeChef#4553"]
 
 
 categoryChoices = ["Any% NMG", "Any%", "Alt Ending", "All Collectibles", "No Shortcuts"]
@@ -831,6 +831,7 @@ class MyClient(discord.Client):
 
           
     async def on_raw_reaction_add(self, payload): #We need to use the "raw"-Method, otherwise it only checks the messages in the bot-cache
+        print("Reaction recognized")
         ctids = open("TicketMessageIds.txt", "r")
         ctidsRl = ctids.readlines()
         ctids.close()
