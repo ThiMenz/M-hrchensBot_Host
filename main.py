@@ -104,7 +104,7 @@ ticketChannelId = 966279655344701449
 bannedWords = ["nigga", "nigger"]
 warningWords = ["retard", "retarded", "penis", "vagina"]
 
-nicePeopleArray = ["FlippyDolphin#1651", "Meister Möhre#1623", "JonasTyroller#7200", "OrangeChef#4553", "TheOrangeWhale#8667", "Zetas2#6270", "Ezra3#0928", "Doginator#5868", "enmy#0745"]
+nicePeopleArray = ["FlippyDolphin#1651", "Meister Möhre#1623", "JonasTyroller#7200", "OrangeChef#4553", "TheOrangeWhale#8667", "Zetas2#6270", "Ezra3#0928", "Doginator#5868", "enmy#0745", "Martinuz_64#7736"]
 godDamnNicePeopleArray = ["FlippyDolphin#1651", "Meister Möhre#1623", "JonasTyroller#7200", "OrangeChef#4553"]
 
 
@@ -194,8 +194,6 @@ class MyClient(discord.Client):
 
 
         #===Check for banned Words===
-
-
 
         for bw in bannedWords:
             if bw.lower() in messageStr.lower():
@@ -877,6 +875,8 @@ class MyClient(discord.Client):
         eventAnnouncements = discord.utils.get(guild.roles, name='Event Announcements') 
         if user.bot: return
         await user.remove_roles(eventAnnouncements)   
+
+        
 
       
 #Start the Discord Bot -->

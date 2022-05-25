@@ -40,3 +40,5 @@ Martinuz_64#7736:  Have “AL Quit Out” & “AL Main/Side Exit” on all IL le
 ------------------------------------------------------------------------------------
 Meister Möhre#1623:  I added <@324128483972349952> and <@847006943910559744> to the NicePeopleArray and removed Dash from it
 ------------------------------------------------------------------------------------
+Meister Möhre#1623:  Probably we should rename the @everyone-role to member or os
+------------------------------------------------------------------------------------
