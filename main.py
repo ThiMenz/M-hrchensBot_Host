@@ -162,7 +162,7 @@ class MyClient(discord.Client):
                 tu = await client.fetch_user(int(lnSplit[0]))
                 embed = discord.Embed(
                 title = 'Happy Birthday!',
-                description = str(tu.name + ' from the Speedrun Mod Team has birthday today! Good luck with your next year of speedrunning :) '),
+                description = str('Today is ' + tu.name + '\'s birthday! Everybody wish ' + lnSplit[1].split('<')[1] + ' a great day, and good luck with future speedruns! :)'),
                 colour = discord.Colour.red()
                 )
                 embed.set_image(url='https://thumbs.dreamstime.com/b/happy-birthday-candles-against-black-background-50258013.jpg')
@@ -283,21 +283,22 @@ class MyClient(discord.Client):
             tempData = [''] * 3
             async for data in message.channel.history(limit=3):
                 tempData[a] = str(data.content)
-                if a != 0:
-                    await data.delete()
+                await data.delete()
                 a += 1
 
             roleFile = open("Roles.txt", "r")
             roleFileRL = roleFile.readlines()
             roleFile.close()
 
+            theNewMessage = await message.channel.send(tempData[0].replace(prefix + 'reaction', ''))
+
             roleFileW = open("Roles.txt", "w")
             for ln in roleFileRL:
                 roleFileW.write(ln)
-            roleFileW.write(str(tempData[2]) + "~" + str(message.id) + "\n")
+            roleFileW.write(str(tempData[2]) + "~" + str(theNewMessage.id) + "\n")
 
             try:
-                await message.add_reaction(str(tempData[1]))
+                await theNewMessage.add_reaction(str(tempData[1]))
             except:
                 print("Entered a false Reaction")
 
@@ -898,7 +899,7 @@ class MyClient(discord.Client):
                     return
         channel = client.get_channel(payload.channel_id)
         message = await channel.fetch_message(payload.message_id)
-        if str(prefix + 'reaction') not in str(message.content): return 
+        if not message.author.bot: return 
         user = payload.member
         #Here he gets the role: Currently it's locked on "Event Announcements"
         tempRole = None
@@ -923,7 +924,7 @@ class MyClient(discord.Client):
         #At the Reaction-Remove-Function he returns "payload.member = None", that's why the program needs to fetch the member
         channel = client.get_channel(payload.channel_id)
         message = await channel.fetch_message(payload.message_id)  
-        if str(prefix + 'reaction') not in str(message.content) or str(message.author) not in nicePeopleArray: return
+        if not message.author.bot: return 
         guild = client.get_guild(payload.guild_id) #916534358943342653 <-- That's the ID from "Will You Speedrun?"-Dc
         user = await(guild.fetch_member(payload.user_id)) # Here is the fetch-Function
         if user.bot: return
