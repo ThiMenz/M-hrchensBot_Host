@@ -11,6 +11,8 @@ from discord.utils import get
 from webserver import keep_alive
 import os
 import random
+from datetime import datetime
+import calendar
 
 #=========Functions=========
 
@@ -98,8 +100,13 @@ dcData[1] = 'bot-commands'
 prefix = "m!"
 client = commands.Bot(command_prefix = 'm!')
 
-watchListChannelId = 963122498273157150  
-ticketChannelId = 966279655344701449  
+watchListChannelId = 963122498273157150     #TestDC=964456821182070784   RealDC=963122498273157150
+
+ticketChannelId = 966279655344701449         #TestDC=966237739223760906   RealDC=966279655344701449
+
+birthdayChannelId = 980054278272090112      #TestDC=980015311199813683   RealDC=980054278272090112
+                            
+activeGuildId = 916534358943342653           #TestDC=964450998452125697   RealDC=916534358943342653
 
 bannedWords = ["nigga", "nigger"]
 warningWords = ["retard", "retarded", "penis", "vagina"]
@@ -139,9 +146,39 @@ class MyClient(discord.Client):
         else: activeBotStatus = 0
             
 
-    @tasks.loop(seconds=300.0)
+    @tasks.loop(seconds=20.0)
     async def Change_Values(self):      
         listOfSpeedyTicketWriter.clear()
+        d = datetime.utcnow()
+        unixtime = calendar.timegm(d.utctimetuple())
+        print(unixtime)
+        bdays = open("Birthdays.txt", "r")
+        bDaysRL = bdays.readlines()
+        bdays.close()
+        for ln in bDaysRL:
+            lnSplit = ln.split('~')
+            if int(unixtime) > (int(lnSplit[2]) + (int(lnSplit[3]) * 31556926)):
+                bDayChannel = client.get_channel(birthdayChannelId)
+                tu = await client.fetch_user(int(lnSplit[0]))
+                embed = discord.Embed(
+                title = 'Happy Birthday!',
+                description = str(tu.name + ' from the Speedrun Mod Team has birthday today! Good luck with your next year of speedrunning :) '),
+                colour = discord.Colour.red()
+                )
+                embed.set_image(url='https://thumbs.dreamstime.com/b/happy-birthday-candles-against-black-background-50258013.jpg')
+                theGuild = client.get_guild(activeGuildId)
+                theRole = discord.utils.get(theGuild.roles,name="Birthday Announcements")
+                await bDayChannel.send(tu.mention + " " + theRole.mention, embed=embed)
+
+                bdaysW = open("Birthdays.txt", "w")
+                for ln2 in bDaysRL:
+                    if ln2 != ln:
+                        bdaysW.write(ln2)
+                    else:
+                        bdaysW.write(lnSplit[0] + "~" + lnSplit[1] + "~" + lnSplit[2] + "~" + str((int(lnSplit[3]) + 1)) + "\n")
+
+                bdaysW.close()
+                return
         print('300s over!')
         return
         #Getting the Leaderboard -->
@@ -243,12 +280,21 @@ class MyClient(discord.Client):
         if str(prefix + 'reaction') in messageStr.lower(): #If a m!Reaction is in the message, then he has to delete the emoji and react with it on the last message
             if str(message.author) not in nicePeopleArray: return #when the author isn't included in the Array nothing happens
             a = 0
-            tempData = [''] * 2
-            async for data in message.channel.history(limit=2):
+            tempData = [''] * 3
+            async for data in message.channel.history(limit=3):
                 tempData[a] = str(data.content)
-                if a == 1:
+                if a != 0:
                     await data.delete()
                 a += 1
+
+            roleFile = open("Roles.txt", "r")
+            roleFileRL = roleFile.readlines()
+            roleFile.close()
+
+            roleFileW = open("Roles.txt", "w")
+            for ln in roleFileRL:
+                roleFileW.write(ln)
+            roleFileW.write(str(tempData[2]) + "~" + str(message.id) + "\n")
 
             try:
                 await message.add_reaction(str(tempData[1]))
@@ -355,7 +401,7 @@ class MyClient(discord.Client):
 
         #if str(prefix + 'zetas') in messageStr.lower(): 
         #    theGuild = message.guild 
-        #   theRole = discord.utils.get(theGuild.roles,name=messageStr.replace(prefix + 'zetas', ''))
+        #    theRole = discord.utils.get(theGuild.roles,name=messageStr.replace(prefix + 'zetas', ''))
         #    message.channel.send("That should be the mention... " + theRole.mention)
         #    return
 
@@ -852,12 +898,20 @@ class MyClient(discord.Client):
                     return
         channel = client.get_channel(payload.channel_id)
         message = await channel.fetch_message(payload.message_id)
-        if str(prefix + 'reaction') not in str(message.content) or str(message.author) not in nicePeopleArray: return 
+        if str(prefix + 'reaction') not in str(message.content): return 
         user = payload.member
         #Here he gets the role: Currently it's locked on "Event Announcements"
-        eventAnnouncements = discord.utils.get(user.guild.roles, name='Event Announcements') 
+        tempRole = None
+        roleTxt = open("Roles.txt", "r")
+        roleTxtRl = roleTxt.readlines()
+        roleTxt.close()
+        for ln in roleTxtRl:
+            if "~" in ln:
+                if int(ln.split('~')[1]) == int(payload.message_id):  
+                    tempRole = discord.utils.get(user.guild.roles, name=str(ln.split('~')[0])) 
+
         if user.bot: return
-        await user.add_roles(eventAnnouncements)
+        await user.add_roles(tempRole)
 
 
       
@@ -872,10 +926,17 @@ class MyClient(discord.Client):
         if str(prefix + 'reaction') not in str(message.content) or str(message.author) not in nicePeopleArray: return
         guild = client.get_guild(payload.guild_id) #916534358943342653 <-- That's the ID from "Will You Speedrun?"-Dc
         user = await(guild.fetch_member(payload.user_id)) # Here is the fetch-Function
-        eventAnnouncements = discord.utils.get(guild.roles, name='Event Announcements') 
         if user.bot: return
-        await user.remove_roles(eventAnnouncements)   
-
+        tempRole = None
+        roleTxt = open("Roles.txt", "r")
+        roleTxtRl = roleTxt.readlines()
+        roleTxt.close()
+        for ln in roleTxtRl:
+            if "~" in ln:
+                if int(ln.split('~')[1]) == int(payload.message_id):  
+                    tempRole = discord.utils.get(user.guild.roles, name=str(ln.split('~')[0])) 
+        if user.bot: return
+        await user.remove_roles(tempRole)
         
 
       

@@ -18,5 +18,6 @@ n@&6: ~Removed
 3@*z: ~Under consideration 
 D@(x: ~Under consideration 
 4@)K: ~Under consideration 
-g#!6: ~Under consideration 
+g#!6: ~Implemented 
 2#@y: ~Unseen 
+S##g: ~Under consideration 
