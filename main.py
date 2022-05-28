@@ -146,7 +146,7 @@ class MyClient(discord.Client):
         else: activeBotStatus = 0
             
 
-    @tasks.loop(seconds=20.0)
+    @tasks.loop(seconds=300.0)
     async def Change_Values(self):      
         listOfSpeedyTicketWriter.clear()
         d = datetime.utcnow()
@@ -278,7 +278,7 @@ class MyClient(discord.Client):
 
         
         if str(prefix + 'reaction') in messageStr.lower(): #If a m!Reaction is in the message, then he has to delete the emoji and react with it on the last message
-            if str(message.author) not in nicePeopleArray: return #when the author isn't included in the Array nothing happens
+            if str(message.author) not in godDamnNicePeopleArray: return #when the author isn't included in the Array nothing happens
             a = 0
             tempData = [''] * 3
             async for data in message.channel.history(limit=3):
